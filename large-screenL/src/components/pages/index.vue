@@ -11,8 +11,8 @@
         <div class="topTitle">城市绿地智能监测与质量评估监测系统</div>
       </div>
       <div class="timeThree">
-        <div class="time1">12:34:12</div>
-        <div class="dayTime">2020.3.23</div>
+        <div class="time1">{{nowTime}}</div>
+        <div class="dayTime">{{nowDate}}</div>
       </div>
       <div class="fourDiv">
         <ul>
@@ -56,7 +56,7 @@
 
               <div class="pgNumber">
                 <div>
-                  <span class="sp1">1026</span>
+                  <span class="sp1"><countTo ref='example' :startVal='startVal' :endVal='endVal' :duration='4000' :separator='separator'></countTo></span>
                   <span class="sp2">张</span>
                 </div>
               </div>
@@ -69,7 +69,7 @@
 
               <div class="pgNumber">
                 <div>
-                  <span class="sp1">1026</span>
+                  <span class="sp1"><countTo ref='example2' :startVal='startVal' :endVal='endValt' :duration='4000' :separator='separator'></countTo></span>
                   <span class="sp2">张</span>
                 </div>
               </div>
@@ -359,11 +359,21 @@
 </template>
 
 <script>
+  import countTo from 'vue-count-to';
 export default {
-  components: {},
+  components: {countTo},
   data() {
     return {
       chart: null,
+      nowDate: "", // 当前日期
+      nowTime: "", // 当前时间
+      nowWeek: "", // 当前星期
+         // 初始值
+        startVal: 0,
+        // 最终值
+        endVal: 1089,
+        endValt: 1089,
+        separator:''
     };
   },
 
@@ -378,7 +388,8 @@ export default {
   },
   mounted() {
     //组件载入后
-
+    this.$refs.example.start();
+    this.$refs.example2.start();
     this.$nextTick(function () {
       this.chartinit();
       this.chartinitsoil();
@@ -387,6 +398,7 @@ export default {
       this.chartinithealth();
       this.chartinitsign();
     });
+    this.currentTime();
     //自适应
     // let _this = this;
     // window.onresize = function () {
@@ -399,6 +411,42 @@ export default {
     // };
   },
   methods: {
+    //时间刷新
+    currentTime() {
+      setInterval(this.getDate, 500);
+    },
+    //时间获取
+
+    getDate: function () {
+      var _this = this;
+      let yy = new Date().getFullYear();
+      let mm = new Date().getMonth() + 1;
+      let dd = new Date().getDate();
+      let week = new Date().getDay();
+      let hh = new Date().getHours();
+      let mf =
+        new Date().getMinutes() < 10
+          ? "0" + new Date().getMinutes()
+          : new Date().getMinutes();
+      let ms = new Date().getSeconds();
+      if (week == 1) {
+        this.nowWeek = "星期一";
+      } else if (week == 2) {
+        this.nowWeek = "星期二";
+      } else if (week == 3) {
+        this.nowWeek = "星期三";
+      } else if (week == 4) {
+        this.nowWeek = "星期四";
+      } else if (week == 5) {
+        this.nowWeek = "星期五";
+      } else if (week == 6) {
+        this.nowWeek = "星期六";
+      } else {
+        this.nowWeek = "星期日";
+      }
+      _this.nowTime = hh + ":" + mf + ":"+ ms;
+      _this.nowDate = yy + "." + mm + "." + dd;
+    },
     chartinit(data) {
       this.chart = this.$echarts.init(this.$refs.OxygenIons);
       var array = [80, 92, 101, 144];
@@ -767,7 +815,7 @@ export default {
 
         series: [
           {
-            data: [20, 52, 48, 37],
+            data: [20, 52, 48, 67],
             type: "line",
             areaStyle: {
               normal: {
@@ -842,7 +890,7 @@ export default {
 
         series: [
           {
-            data: [20, 52, 48, 17],
+            data: [20, 52, 48, 57],
             type: "line",
             areaStyle: {
               normal: {
@@ -961,6 +1009,10 @@ export default {
   },
   beforeDestroy() {
     //组件销毁前
+    if (this.getDate) {
+      console.log("销毁定时器");
+      clearInterval(this.getDate); // 在Vue实例销毁前，清除时间定时器
+    }
   },
   destroyed() {
     //组件销毁后
@@ -1585,7 +1637,7 @@ export default {
           font-family: "SimHei Regular";
           color: #a2d4e5;
           display: block;
-          margin: 20px 0 0 0;
+          margin: 20px 0 0 25px;
         }
         .lintg {
           width: 100%;
